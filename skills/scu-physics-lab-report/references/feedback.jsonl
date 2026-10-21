@@ -1,0 +1,6 @@
+{"id":"FH-REF-001","statement":"本次参考值11.6 V","scope":"课程案例A：弗兰克—赫兹","source":"S2用户确认","source_kind":"user_confirmed","status":"confirmed","check":"核代入值","supersedes":["OLD-FH-REF"]}
+{"id":"FH-UA-001","statement":"逐差均值配合五相邻间距按课堂指定公式计算","scope":"课程案例A：弗兰克—赫兹","source":"S2确认及更正，S1专属记录","source_kind":"user_confirmed","status":"confirmed","check":"复算课堂方法，另区分统计适用性","supersedes":["OLD-FH-UA"]}
+{"id":"OLD-FH-REF","statement":"要求11.6改11.61，3.3%改3.2%","scope":"历史助手误判","source":"S2撤回","source_kind":"ai_summary","status":"retracted","check":"不得再作必改","supersedes":[]}
+{"id":"OLD-FH-UA","statement":"要求课堂0.33 V改为0.27 V","scope":"历史助手误判","source":"S2撤回","source_kind":"ai_summary","status":"retracted","check":"不得覆盖课堂方法","supersedes":[]}
+{"id":"UNIT-001","statement":"数值根式外有V无需根内再写V²","scope":"等价数值代入表达","source":"S2单位建议撤回与量纲核验","source_kind":"general_principle","status":"confirmed","check":"看完整等式","supersedes":[]}
+{"id":"DEPTH-001","statement":"历史误差与改进因过简合计扣3分","scope":"S1批改个案，原件未复核","source":"S1表0","source_kind":"ai_summary","status":"reported","check":"核机制及改进，不推固定条数或分数","supersedes":[]}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "SCU物理实验报告"
+  short_description: "依据课堂要求撰写实验报告、复算数据、检查扣分风险并学习批改反馈"
+  default_prompt: "使用 $scu-physics-lab-report，根据我上传的实验资料撰写或审查报告，复算数据并区分明确错误、待核实问题和优化建议。"
