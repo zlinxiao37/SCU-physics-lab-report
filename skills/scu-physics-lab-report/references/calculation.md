@@ -10,6 +10,9 @@
 {"operation":"halfwidth","t0_s":1.5115,"r1":0.9821,"r2":1.0187,"weak_damping":true}
 {"operation":"linear_fit","x":[0,1,2,3],"y":[1,3,5,7]}
 {"operation":"format_result","value":11.9777777778,"uncertainty":0.32882,"significant_digits":2}
+{"operation":"format_mean","value":10.156,"resolution":"0.1"}
+{"operation":"format_result","value":10.156,"uncertainty":0.217,"result_resolution":"0.1"}
+{"operation":"format_percent","value":3.2567,"significant_digits":2}
 ```
 示例数据仅用于演示，绝不移入新报告。
 FH另一方法`successive_groups_mean_a`用于明确指定三组逐差统计的任务，不能自动替换课堂方法。
@@ -19,3 +22,5 @@ linear_fit仅含截距未加权OLS，x误差忽略、y独立等方差；斜率�
 format_result采用十进制四舍五入，处理进位后末位对齐；老师规定其他修约方法时不用此格式函数。计算仍用未修约值。
 单位换算、百分差定义、输入来源由调用者明确核对，工具不做OCR、不验证报告全体单位、不判断评分。
 运行 `python scripts/test_lab_calc.py` 验证已支持数值行为，不能把通过率当现实报告准确率。
+
+format_mean仅按显式resolution显示，不从浮点数猜原始精度；format_result的result_resolution可覆盖默认不确定度位数。格式示例不是课堂精度依据。format_percent输入已算出的百分数；所有后续计算仍使用未修约值。指定末位会把不确定度舍成零时拒绝，先核显示要求。

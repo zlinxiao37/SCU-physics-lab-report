@@ -13,6 +13,7 @@ description: SCU物理实验报告（中文调用名称）。撰写、计算、�
 - 所有模式读取 [evidence.md](references/evidence.md) 和 [preferences.md](references/preferences.md)。
 - 按实验读取：[弗兰克—赫兹](references/franck-hertz.md)、[波尔振动](references/pohl.md)、[超声与弹簧振子](references/doppler-spring.md)。历史案例不是本次数据或全课程规定；先匹配课程、实验、老师及批次，无法匹配就仅作参考。
 - 学习和历史争议时读取 [feedback.jsonl](references/feedback.jsonl) 与 [sources.md](references/sources.md)。
+- 处理报告显示精度与论文图表时读取 [presentation.md](references/presentation.md)，同时用于写作与审查。
 - 计算见 [calculation.md](references/calculation.md) 与 `scripts/lab_calc.py`。只有覆盖的模型才调用；其他模型按本次公式写临时脚本独立复算，不能硬套。
 
 ## 固定执行流程
