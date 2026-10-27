@@ -112,19 +112,66 @@ def linear_fit(x, y):
             'assumption': '含截距的未加权OLS；x误差忽略，y独立等方差，单位由输入量推导'}
 
 
-def format_result(value, uncertainty, significant_digits=2):
+def resolution_quantum(resolution):
+    """An explicit report display place, not an inferred instrument property."""
+    try:
+        q = Decimal(str(resolution))
+    except Exception as exc:
+        raise ValueError('显示末位必须是明确的十进制正10次幂，如0.1或0.01') from exc
+    if not q.is_finite() or q <= 0 or q.normalize().as_tuple().digits != (1,):
+        raise ValueError('显示末位必须是明确的十进制正10次幂，如0.1或0.01')
+    return q.normalize()
+
+
+def format_mean(value, resolution):
+    value = numbers([value], 1)[0]
+    q = resolution_quantum(resolution)
+    return {'mean_text': format(Decimal(str(value)).quantize(q, rounding=ROUND_HALF_UP), 'f'),
+            'unrounded_value': value, 'resolution': str(q),
+            'note': '只修约显示；后续计算继续使用未修约值；末位须有课堂依据'}
+
+
+def format_percent(value, significant_digits=2):
+    value = numbers([value], 1)[0]
+    if type(significant_digits) is not int or significant_digits < 1:
+        raise ValueError('有效数字位数必须是正整数')
+    p = Decimal(str(value))
+    if p == 0:
+        text = '0'
+    else:
+        q = Decimal(1).scaleb(p.copy_abs().adjusted()-significant_digits+1)
+        p = p.quantize(q, rounding=ROUND_HALF_UP)
+        q = Decimal(1).scaleb(p.copy_abs().adjusted()-significant_digits+1)
+        p = p.quantize(q, rounding=ROUND_HALF_UP)
+        # Use scientific notation when trailing integer zeros would hide precision.
+        if q.adjusted() > 0 or (q.adjusted() == 0 and p % Decimal(10) == 0):
+            exponent = p.copy_abs().adjusted()
+            text = format(p.scaleb(-exponent), f'.{significant_digits-1}f') + f'e{exponent:+d}'
+        else:
+            text = format(p, 'f')
+    return {'percent_text': text+'%', 'significant_digits': significant_digits,
+            'unrounded_percent': value}
+
+
+def format_result(value, uncertainty, significant_digits=2, result_resolution=None):
     value, uncertainty = numbers([value, uncertainty])
     if uncertainty <= 0 or type(significant_digits) is not int or significant_digits not in (1,2):
         raise ValueError('需正不确定度及1或2位有效数字；零不确定度不得自动推断精度')
     u = Decimal(str(uncertainty))
-    q = Decimal(1).scaleb(u.adjusted()-significant_digits+1)
-    rounded = u.quantize(q, rounding=ROUND_HALF_UP)
-    # Recompute position after rounding across a power of ten, e.g. 0.0996 -> 0.10.
-    q = Decimal(1).scaleb(rounded.adjusted()-significant_digits+1)
-    rounded = rounded.quantize(q, rounding=ROUND_HALF_UP)
+    if result_resolution is not None:
+        q = resolution_quantum(result_resolution)
+        rounded = u.quantize(q, rounding=ROUND_HALF_UP)
+        if rounded == 0:
+            raise ValueError('指定末位会把不确定度舍成零，需核对课堂显示要求')
+    else:
+        q = Decimal(1).scaleb(u.adjusted()-significant_digits+1)
+        rounded = u.quantize(q, rounding=ROUND_HALF_UP)
+        # Recompute position after rounding across a power of ten, e.g. 0.0996 -> 0.10.
+        q = Decimal(1).scaleb(rounded.adjusted()-significant_digits+1)
+        rounded = rounded.quantize(q, rounding=ROUND_HALF_UP)
     v = Decimal(str(value)).quantize(q, rounding=ROUND_HALF_UP)
     return {'value_text': format(v, 'f'), 'uncertainty_text': format(rounded, 'f'),
-            'rounding': 'decimal ROUND_HALF_UP; classroom rules may override'}
+            'rounding': 'decimal ROUND_HALF_UP; explicit classroom display place overrides uncertainty-digit default'}
 
 
 def run(data):
@@ -137,7 +184,9 @@ def run(data):
     if operation == 'damping': return damping(data['amplitudes'], data['period_s'], data['lag'])
     if operation == 'halfwidth': return halfwidth(data['t0_s'], data['r1'], data['r2'], data['weak_damping'])
     if operation == 'linear_fit': return linear_fit(data['x'], data['y'])
-    if operation == 'format_result': return format_result(data['value'], data['uncertainty'], data.get('significant_digits', 2))
+    if operation == 'format_mean': return format_mean(data['value'], data['resolution'])
+    if operation == 'format_percent': return format_percent(data['value'], data.get('significant_digits', 2))
+    if operation == 'format_result': return format_result(data['value'], data['uncertainty'], data.get('significant_digits', 2), data.get('result_resolution'))
     raise ValueError('未知operation')
 
 

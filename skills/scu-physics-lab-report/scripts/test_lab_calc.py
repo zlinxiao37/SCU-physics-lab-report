@@ -1,7 +1,7 @@
 import math
 import unittest
 from fractions import Fraction as F
-from lab_calc import mean_a, percent_difference, fh, damping, halfwidth, linear_fit, format_result, run
+from lab_calc import mean_a, percent_difference, fh, damping, halfwidth, linear_fit, format_result, format_mean, format_percent, run
 
 
 class LabCalculationTests(unittest.TestCase):
@@ -64,6 +64,25 @@ class LabCalculationTests(unittest.TestCase):
         self.assertEqual((r['value_text'],r['uncertainty_text']),('1.23','0.10'))
     def test_zero_uncertainty_no_precision_guess(self):
         with self.assertRaises(ValueError): format_result(1,0)
+    def test_explicit_mean_resolution(self):
+        self.assertEqual(format_mean(10.156, '0.1')['mean_text'],'10.2')
+        self.assertEqual(format_mean(10.156, '0.01')['mean_text'],'10.16')
+    def test_explicit_result_place(self):
+        r=format_result(10.156, .217, result_resolution='0.1')
+        self.assertEqual((r['value_text'],r['uncertainty_text']),('10.2','0.2'))
+    def test_percent_uses_unrounded_mean(self):
+        avg=float(F(617,50))
+        self.assertEqual(format_mean(avg,'0.1')['mean_text'],'12.3')
+        self.assertEqual(format_percent(percent_difference(avg,12.0,True))['percent_text'],'2.8%')
+        self.assertEqual(format_percent(percent_difference(12.3,12.0,True))['percent_text'],'2.5%')
+    def test_two_significant_percent_not_two_decimals(self):
+        for value,expected in [(3.2567,'3.3%'),(.032567,'0.033%'),(12.345,'12%'),(-3.2567,'-3.3%'),(9.999,'1.0e+1%'),(0,'0%')]:
+            with self.subTest(value=value): self.assertEqual(format_percent(value)['percent_text'],expected)
+    def test_no_inferred_display_resolution(self):
+        with self.assertRaises(KeyError): run({'operation':'format_mean','value':11.97777})
+        for resolution in ['0.2',0,-1,'NaN',True]:
+            with self.subTest(resolution=resolution),self.assertRaises(ValueError): format_mean(12,resolution)
+        with self.assertRaises(ValueError): format_result(12,.001,result_resolution='0.1')
 
 
 if __name__=='__main__': unittest.main(verbosity=2)
